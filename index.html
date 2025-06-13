@@ -529,16 +529,21 @@
             editingIndex = index;
             document.querySelector('#employee-form h3').textContent = 'Edit Employee';
 
-            // Fill form with employee data
+            // Fill form with employee data - ensuring all existing data is preserved
             document.getElementById('cmsId').value = employee.cmsId || '';
             document.getElementById('employeeName').value = employee.employeeName || '';
             document.getElementById('grade').value = employee.grade || '';
+            
+            // Preserve all existing dates exactly as they are
             document.getElementById('counsellingDate1').value = employee.counsellingDate1 || '';
             document.getElementById('counsellingDate2').value = employee.counsellingDate2 || '';
             document.getElementById('counsellingDate3').value = employee.counsellingDate3 || '';
             document.getElementById('footplateDate1').value = employee.footplateDate1 || '';
             document.getElementById('footplateDate2').value = employee.footplateDate2 || '';
             document.getElementById('footplateDate3').value = employee.footplateDate3 || '';
+            
+            // Scroll to form for better mobile experience
+            document.getElementById('employee-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function deleteEmployee(index) {
@@ -559,9 +564,9 @@
             e.preventDefault();
             
             const formData = {
-                cmsId: document.getElementById('cmsId').value,
-                employeeName: document.getElementById('employeeName').value,
-                grade: document.getElementById('grade').value,
+                cmsId: document.getElementById('cmsId').value.trim(),
+                employeeName: document.getElementById('employeeName').value.trim(),
+                grade: document.getElementById('grade').value.trim(),
                 counsellingDate1: document.getElementById('counsellingDate1').value,
                 counsellingDate2: document.getElementById('counsellingDate2').value,
                 counsellingDate3: document.getElementById('counsellingDate3').value,
@@ -571,7 +576,12 @@
             };
 
             if (editingIndex >= 0) {
-                employees[editingIndex] = formData;
+                // When editing, preserve any existing data that wasn't changed
+                const existingEmployee = employees[editingIndex];
+                employees[editingIndex] = {
+                    ...existingEmployee, // Keep existing data as fallback
+                    ...formData // Override with new form data
+                };
                 showNotification('Employee updated successfully!', 'success');
             } else {
                 employees.push(formData);
