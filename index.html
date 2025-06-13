@@ -523,24 +523,103 @@
             document.querySelector('#employee-form h3').textContent = 'Add New Employee';
         }
 
+        // Helper function to convert date formats
+        function formatDateForInput(dateStr) {
+            if (!dateStr) return '';
+            
+            // If already in YYYY-MM-DD format, return as is
+            if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                return dateStr;
+            }
+            
+            // Convert M/D/YYYY or MM/DD/YYYY to YYYY-MM-DD
+            try {
+                const date = new Date(dateStr);
+                if (isNaN(date.getTime())) return '';
+                
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                
+                return `${year}-${month}-${day}`;
+            } catch (e) {
+                console.log('Date conversion error:', e);
+                return '';
+            }
+        }
+
+        // Helper function to format date for display
+        function formatDateForDisplay(dateStr) {
+            if (!dateStr) return 'Not Set';
+            
+            try {
+                const date = new Date(dateStr);
+                if (isNaN(date.getTime())) return 'Not Set';
+                
+                return date.toLocaleDateString();
+            } catch (e) {
+                return dateStr; // Return original if conversion fails
+            }
+        }
+
         function editEmployee(index) {
             const employee = employees[index];
+            console.log('Editing employee:', employee); // Debug log
+            
             document.getElementById('employee-form').style.display = 'block';
             editingIndex = index;
             document.querySelector('#employee-form h3').textContent = 'Edit Employee';
 
-            // Fill form with employee data - ensuring all existing data is preserved
-            document.getElementById('cmsId').value = employee.cmsId || '';
-            document.getElementById('employeeName').value = employee.employeeName || '';
-            document.getElementById('grade').value = employee.grade || '';
-            
-            // Preserve all existing dates exactly as they are
-            document.getElementById('counsellingDate1').value = employee.counsellingDate1 || '';
-            document.getElementById('counsellingDate2').value = employee.counsellingDate2 || '';
-            document.getElementById('counsellingDate3').value = employee.counsellingDate3 || '';
-            document.getElementById('footplateDate1').value = employee.footplateDate1 || '';
-            document.getElementById('footplateDate2').value = employee.footplateDate2 || '';
-            document.getElementById('footplateDate3').value = employee.footplateDate3 || '';
+            // Wait a moment for the form to be visible, then fill it
+            setTimeout(() => {
+                // Fill form with employee data - ensuring all existing data is preserved
+                const cmsIdField = document.getElementById('cmsId');
+                const employeeNameField = document.getElementById('employeeName');
+                const gradeField = document.getElementById('grade');
+                
+                if (cmsIdField) cmsIdField.value = employee.cmsId || '';
+                if (employeeNameField) employeeNameField.value = employee.employeeName || '';
+                if (gradeField) gradeField.value = employee.grade || '';
+                
+                // Preserve all existing dates with proper format conversion
+                const counsellingDate1Field = document.getElementById('counsellingDate1');
+                const counsellingDate2Field = document.getElementById('counsellingDate2');
+                const counsellingDate3Field = document.getElementById('counsellingDate3');
+                const footplateDate1Field = document.getElementById('footplateDate1');
+                const footplateDate2Field = document.getElementById('footplateDate2');
+                const footplateDate3Field = document.getElementById('footplateDate3');
+                
+                if (counsellingDate1Field) {
+                    const formattedDate = formatDateForInput(employee.counsellingDate1);
+                    counsellingDate1Field.value = formattedDate;
+                    console.log('Setting counsellingDate1:', employee.counsellingDate1, '-> formatted:', formattedDate);
+                }
+                if (counsellingDate2Field) {
+                    const formattedDate = formatDateForInput(employee.counsellingDate2);
+                    counsellingDate2Field.value = formattedDate;
+                    console.log('Setting counsellingDate2:', employee.counsellingDate2, '-> formatted:', formattedDate);
+                }
+                if (counsellingDate3Field) {
+                    const formattedDate = formatDateForInput(employee.counsellingDate3);
+                    counsellingDate3Field.value = formattedDate;
+                    console.log('Setting counsellingDate3:', employee.counsellingDate3, '-> formatted:', formattedDate);
+                }
+                if (footplateDate1Field) {
+                    const formattedDate = formatDateForInput(employee.footplateDate1);
+                    footplateDate1Field.value = formattedDate;
+                    console.log('Setting footplateDate1:', employee.footplateDate1, '-> formatted:', formattedDate);
+                }
+                if (footplateDate2Field) {
+                    const formattedDate = formatDateForInput(employee.footplateDate2);
+                    footplateDate2Field.value = formattedDate;
+                    console.log('Setting footplateDate2:', employee.footplateDate2, '-> formatted:', formattedDate);
+                }
+                if (footplateDate3Field) {
+                    const formattedDate = formatDateForInput(employee.footplateDate3);
+                    footplateDate3Field.value = formattedDate;
+                    console.log('Setting footplateDate3:', employee.footplateDate3, '-> formatted:', formattedDate);
+                }
+            }, 100);
             
             // Scroll to form for better mobile experience
             document.getElementById('employee-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -600,6 +679,8 @@
                 return;
             }
 
+            console.log('Rendering employees:', employees); // Debug log
+
             container.innerHTML = employees.map((employee, index) => `
                 <div class="employee-card">
                     <div class="card-header">
@@ -615,18 +696,18 @@
                         <div class="dates-section">
                             <div class="info-label">Counselling Dates</div>
                             <div class="dates-grid">
-                                <div class="date-item">${employee.counsellingDate1 || 'Not Set'}</div>
-                                <div class="date-item">${employee.counsellingDate2 || 'Not Set'}</div>
-                                <div class="date-item">${employee.counsellingDate3 || 'Not Set'}</div>
+                                <div class="date-item">${formatDateForDisplay(employee.counsellingDate1)}</div>
+                                <div class="date-item">${formatDateForDisplay(employee.counsellingDate2)}</div>
+                                <div class="date-item">${formatDateForDisplay(employee.counsellingDate3)}</div>
                             </div>
                         </div>
                         
                         <div class="dates-section">
                             <div class="info-label">Footplate Dates</div>
                             <div class="dates-grid">
-                                <div class="date-item">${employee.footplateDate1 || 'Not Set'}</div>
-                                <div class="date-item">${employee.footplateDate2 || 'Not Set'}</div>
-                                <div class="date-item">${employee.footplateDate3 || 'Not Set'}</div>
+                                <div class="date-item">${formatDateForDisplay(employee.footplateDate1)}</div>
+                                <div class="date-item">${formatDateForDisplay(employee.footplateDate2)}</div>
+                                <div class="date-item">${formatDateForDisplay(employee.footplateDate3)}</div>
                             </div>
                         </div>
                     </div>
