@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Form Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #ffecd2, #fcb69f);
+            color: #333;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #a8e6cf, #7fcdcd);
+            color: #333;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #ff8a80, #ff5722);
+            color: white;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .employee-form {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .employees-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .employee-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.8) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .employee-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+
+        .employee-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .employee-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+        }
+
+        .employee-id {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .card-content {
+            display: grid;
+            gap: 15px;
+        }
+
+        .info-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.95rem;
+        }
+
+        .dates-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .dates-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .date-item {
+            background: rgba(118, 75, 162, 0.1);
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            border-radius: 8px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(45deg, #4caf50, #45a049);
+        }
+
+        .notification.error {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .employees-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Employee Management System</h1>
+            <p>Manage employee counselling and footplate training records</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="addEmployee()">Add New Employee</button>
+            <button class="btn btn-secondary" onclick="downloadData()">Download Data</button>
+            <label for="upload-input" class="btn btn-success">Upload Data</label>
+            <input type="file" id="upload-input" class="file-input" accept=".csv" onchange="uploadData(event)">
+            <button class="btn btn-danger" onclick="clearAll()">Clear All</button>
+        </div>
+
+        <div id="employee-form" class="employee-form" style="display: none;">
+            <h3>Employee Information</h3>
+            <form id="employeeDataForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="cmsId">CMS ID</label>
+                        <input type="text" id="cmsId" name="cmsId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeName">Employee Name</label>
+                        <input type="text" id="employeeName" name="employeeName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="grade">Grade</label>
+                        <input type="text" id="grade" name="grade" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="counsellingDate1">Counselling Date 1</label>
+                        <input type="date" id="counsellingDate1" name="counsellingDate1">
+                    </div>
+                    <div class="form-group">
+                        <label for="counsellingDate2">Counselling Date 2</label>
+                        <input type="date" id="counsellingDate2" name="counsellingDate2">
+                    </div>
+                    <div class="form-group">
+                        <label for="counsellingDate3">Counselling Date 3</label>
+                        <input type="date" id="counsellingDate3" name="counsellingDate3">
+                    </div>
+                    <div class="form-group">
+                        <label for="footplateDate1">Footplate Date 1</label>
+                        <input type="date" id="footplateDate1" name="footplateDate1">
+                    </div>
+                    <div class="form-group">
+                        <label for="footplateDate2">Footplate Date 2</label>
+                        <input type="date" id="footplateDate2" name="footplateDate2">
+                    </div>
+                    <div class="form-group">
+                        <label for="footplateDate3">Footplate Date 3</label>
+                        <input type="date" id="footplateDate3" name="footplateDate3">
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary">Save Employee</button>
+                    <button type="button" class="btn btn-secondary" onclick="cancelForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="employees-container" class="employees-grid"></div>
+    </div>
+
+    <script>
+        let employees = [];
+        let editingIndex = -1;
+
+        // Load data from memory on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            renderEmployees();
+        });
+
+        function addEmployee() {
+            document.getElementById('employee-form').style.display = 'block';
+            document.getElementById('employeeDataForm').reset();
+            editingIndex = -1;
+            document.querySelector('#employee-form h3').textContent = 'Add New Employee';
+        }
+
+        function editEmployee(index) {
+            const employee = employees[index];
+            document.getElementById('employee-form').style.display = 'block';
+            editingIndex = index;
+            document.querySelector('#employee-form h3').textContent = 'Edit Employee';
+
+            // Fill form with employee data
+            document.getElementById('cmsId').value = employee.cmsId || '';
+            document.getElementById('employeeName').value = employee.employeeName || '';
+            document.getElementById('grade').value = employee.grade || '';
+            document.getElementById('counsellingDate1').value = employee.counsellingDate1 || '';
+            document.getElementById('counsellingDate2').value = employee.counsellingDate2 || '';
+            document.getElementById('counsellingDate3').value = employee.counsellingDate3 || '';
+            document.getElementById('footplateDate1').value = employee.footplateDate1 || '';
+            document.getElementById('footplateDate2').value = employee.footplateDate2 || '';
+            document.getElementById('footplateDate3').value = employee.footplateDate3 || '';
+        }
+
+        function deleteEmployee(index) {
+            if (confirm('Are you sure you want to delete this employee?')) {
+                employees.splice(index, 1);
+                renderEmployees();
+                showNotification('Employee deleted successfully!', 'success');
+            }
+        }
+
+        function cancelForm() {
+            document.getElementById('employee-form').style.display = 'none';
+            document.getElementById('employeeDataForm').reset();
+            editingIndex = -1;
+        }
+
+        document.getElementById('employeeDataForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                cmsId: document.getElementById('cmsId').value,
+                employeeName: document.getElementById('employeeName').value,
+                grade: document.getElementById('grade').value,
+                counsellingDate1: document.getElementById('counsellingDate1').value,
+                counsellingDate2: document.getElementById('counsellingDate2').value,
+                counsellingDate3: document.getElementById('counsellingDate3').value,
+                footplateDate1: document.getElementById('footplateDate1').value,
+                footplateDate2: document.getElementById('footplateDate2').value,
+                footplateDate3: document.getElementById('footplateDate3').value
+            };
+
+            if (editingIndex >= 0) {
+                employees[editingIndex] = formData;
+                showNotification('Employee updated successfully!', 'success');
+            } else {
+                employees.push(formData);
+                showNotification('Employee added successfully!', 'success');
+            }
+
+            cancelForm();
+            renderEmployees();
+        });
+
+        function renderEmployees() {
+            const container = document.getElementById('employees-container');
+            
+            if (employees.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;"><h3>No employees added yet</h3><p>Click "Add New Employee" to get started</p></div>';
+                return;
+            }
+
+            container.innerHTML = employees.map((employee, index) => `
+                <div class="employee-card">
+                    <div class="card-header">
+                        <h3 class="employee-name">${employee.employeeName || 'N/A'}</h3>
+                        <div class="employee-id">ID: ${employee.cmsId || 'N/A'}</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="info-row">
+                            <span class="info-label">Grade:</span>
+                            <span class="info-value">${employee.grade || 'N/A'}</span>
+                        </div>
+                        
+                        <div class="dates-section">
+                            <div class="info-label">Counselling Dates</div>
+                            <div class="dates-grid">
+                                <div class="date-item">${employee.counsellingDate1 || 'Not Set'}</div>
+                                <div class="date-item">${employee.counsellingDate2 || 'Not Set'}</div>
+                                <div class="date-item">${employee.counsellingDate3 || 'Not Set'}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="dates-section">
+                            <div class="info-label">Footplate Dates</div>
+                            <div class="dates-grid">
+                                <div class="date-item">${employee.footplateDate1 || 'Not Set'}</div>
+                                <div class="date-item">${employee.footplateDate2 || 'Not Set'}</div>
+                                <div class="date-item">${employee.footplateDate3 || 'Not Set'}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-actions">
+                        <button class="btn btn-primary btn-small" onclick="editEmployee(${index})">Edit</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteEmployee(${index})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function downloadData() {
+            if (employees.length === 0) {
+                showNotification('No data to download!', 'error');
+                return;
+            }
+
+            const headers = ['Employee', 'CMS_ID', 'Name', 'Grade', 'Counselling_Date1', 'Counselling_Date2', 'Counselling_Date3', 'Footplate_Date1', 'Footplate_Date2', 'Footplate_Date3'];
+            
+            const csvContent = [
+                headers.join(','),
+                ...employees.map((emp, index) => [
+                    `Employee ${index + 1}`,
+                    emp.cmsId || '',
+                    emp.employeeName || '',
+                    emp.grade || '',
+                    emp.counsellingDate1 || '',
+                    emp.counsellingDate2 || '',
+                    emp.counsellingDate3 || '',
+                    emp.footplateDate1 || '',
+                    emp.footplateDate2 || '',
+                    emp.footplateDate3 || ''
+                ].join(','))
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'employees_data.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showNotification('Data downloaded successfully!', 'success');
+        }
+
+        function uploadData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const csv = e.target.result;
+                    const lines = csv.split('\n');
+                    
+                    if (lines.length < 2) {
+                        showNotification('Invalid CSV format!', 'error');
+                        return;
+                    }
+
+                    const headers = lines[0].split(',').map(h => h.trim());
+                    const uploadedEmployees = [];
+
+                    for (let i = 1; i < lines.length; i++) {
+                        const line = lines[i].trim();
+                        if (!line) continue;
+
+                        const values = line.split(',').map(v => v.trim());
+                        
+                        if (values.length >= 10) {
+                            const employee = {
+                                cmsId: values[1] || '',
+                                employeeName: values[2] || '',
+                                grade: values[3] || '',
+                                // Shift counselling dates: uploaded 1,2,3 -> form 2,3 (leave 1 blank)
+                                counsellingDate1: '', // Left blank
+                                counsellingDate2: values[4] || '', // Upload date1 -> form date2
+                                counsellingDate3: values[5] || '', // Upload date2 -> form date3
+                                // Shift footplate dates: uploaded 1,2,3 -> form 2,3 (leave 1 blank)
+                                footplateDate1: '', // Left blank
+                                footplateDate2: values[7] || '', // Upload date1 -> form date2
+                                footplateDate3: values[8] || ''  // Upload date2 -> form date3
+                            };
+                            uploadedEmployees.push(employee);
+                        }
+                    }
+
+                    employees = uploadedEmployees;
+                    renderEmployees();
+                    showNotification(`${uploadedEmployees.length} employees uploaded successfully!`, 'success');
+                    
+                } catch (error) {
+                    showNotification('Error parsing CSV file!', 'error');
+                    console.error('Upload error:', error);
+                }
+            };
+            
+            reader.readAsText(file);
+            event.target.value = ''; // Reset file input
+        }
+
+        function clearAll() {
+            if (confirm('Are you sure you want to clear all employee data?')) {
+                employees = [];
+                renderEmployees();
+                showNotification('All data cleared!', 'success');
+            }
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => document.body.removeChild(notification), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
